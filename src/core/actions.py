@@ -36,15 +36,16 @@ from src.core.unzip_file import Unzipfile
 from src.core.verify_files import Verifyfiles
 from src.core.special_flow import Specialflow
 
+
 class Actions:
     """
     Clase para realizar las Acciones del flujo Normal.
     """
 
     def __init__(
-        self,
-        services: Dict[str, Any],
-        error_handling: ErrorHandling,
+            self,
+            services: Dict[str, Any],
+            error_handling: ErrorHandling,
     ) -> None:
         """
         Inicializa los tributos necesarios para la clase.
@@ -121,7 +122,7 @@ class Actions:
                     updates={
                         "estado": "INICIADO",
                         "contador_intentos_cargue": CGDRtaProcesamiento.contador_intentos_cargue
-                        + 1,
+                                                    + 1,
                     },
                 )
                 if error:
@@ -200,12 +201,6 @@ class Actions:
         llegue el nombre del S3, el nombre del archivo y
         que dicho nombre exista en el S3
         """
-        self.logger_service.log_info(
-            "Se valida que en el mensaje que envia la cola"
-            "llegue el nombre del S3, el nombre del archivo y"
-            "que dicho nombre exista en el S3 "
-            ""
-        )
 
         is_moved = self.s3_service.read_file(
             self.env.BUCKET,
@@ -349,16 +344,16 @@ class Actions:
             )
             return
         if self.validate_files_and_register_indb(
-            {
-                "id_archivo": id_archivo,
-                "file_name": file_data.get("file_name"),
-                "estado": estado,
-                "valido": valido,
-                "todos_comienzan_con_re": todos_comienzan_con_re,
-                "coincidencias": coincidencias,
-                "archivos": archivos,
-                "result": result,
-            }
+                {
+                    "id_archivo": id_archivo,
+                    "file_name": file_data.get("file_name"),
+                    "estado": estado,
+                    "valido": valido,
+                    "todos_comienzan_con_re": todos_comienzan_con_re,
+                    "coincidencias": coincidencias,
+                    "archivos": archivos,
+                    "result": result,
+                }
         ):
             self.validate_and_consolidate_response_process(id_archivo, unzipped_folder_name)
 
@@ -555,16 +550,16 @@ class Actions:
         )
 
         if (
-            file_date.get("valido")
-            and file_date.get("todos_comienzan_con_re")
-            and file_date.get("coincidencias")
-            and result
+                file_date.get("valido")
+                and file_date.get("todos_comienzan_con_re")
+                and file_date.get("coincidencias")
+                and result
         ):
 
             for file in file_date.get("archivos"):
                 if not (
-                    extract_string_after_slash(file_name).split("_")[-1].split("-")[0]
-                    == file.split("_")[-1].split("-")[0]
+                        extract_string_after_slash(file_name).split("_")[-1].split("-")[0]
+                        == file.split("_")[-1].split("-")[0]
                 ):
                     self.rejected_state_errors(id_archivo, file_name, estado, "EICP004")
                     return False
@@ -742,7 +737,7 @@ class Actions:
             self.error_handling.process_file_error(
                 updates={
                     "error_code": "EICP006",
-                    "error_detail":  str(e),
+                    "error_detail": str(e),
                 },
                 file_id=id_archivo,
                 move_file=False,
@@ -786,8 +781,8 @@ class Actions:
             for pro_archivo in result[0]:
                 tipo_archivo = archivo.split("-")[-1].replace(".txt", "")
                 if (
-                    pro_archivo.get("tipo_archivo_rta") == tipo_archivo
-                    and pro_archivo.get("estado") == "PENDIENTE_INICIO"
+                        pro_archivo.get("tipo_archivo_rta") == tipo_archivo
+                        and pro_archivo.get("estado") == "PENDIENTE_INICIO"
                 ):
                     body_validate = {
                         "bucket_name": self.env.BUCKET,
@@ -951,7 +946,7 @@ class Actions:
         result, params, query = self.postgres_service.query(query, params)
         if result:
             id_rta_procesamiento = int(result[0]["id_rta_procesamiento"])
-            return  id_rta_procesamiento
+            return id_rta_procesamiento
         else:
             self.logger_service.log_error(query)
             self.error_handling.process_file_error(

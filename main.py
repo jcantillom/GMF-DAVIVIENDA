@@ -1,9 +1,6 @@
-"""
-Este módulo maneja el flujo principal de procesamiento de archivos y manejo de datos.
-"""
-
 import os
 from typing import Dict, Type, Any
+import json
 from src.core.actions import Actions
 from src.core.error_handling import ErrorHandling
 from src.services.logger_service import LoggerService
@@ -105,23 +102,17 @@ def initialize_services() -> Dict[str, Any]:
 def lambda_handler(event: dict, context: object) -> None:
     """
     Función principal que maneja el evento de AWS Lambda.
-
-    Args:
-        event (dict):
-            Evento recibido por la función Lambda.
-        context (object):
-            Contexto de la ejecución de la función Lambda.
     """
     # Inicializa los servicios
     services: Dict[str, Any] = initialize_services()
 
     # Obtiene la instancia de LoggerService
     logger_service: LoggerService = services["logger_service"]
+
     # Registra log informativo de inicio de la ejecución
     logger_service.log_info("Inicia ejecucion")
 
     try:
-        # Instancia el ErrorHandling para el manejo de los errores
         error_handling: ErrorHandling = ErrorHandling(
             services=services,
             event_data=event,
@@ -131,17 +122,23 @@ def lambda_handler(event: dict, context: object) -> None:
             services=services,
             error_handling=error_handling,
         )
-        logger_service.log_info("Procesa cada mensaje en el evento de SQS")
-
         for record in event["Records"]:
+            # Parsear el 'body' para convertirlo de JSON a dict
+            body = json.loads(record["body"])
+
+            # Extrae el nombre del archivo del evento de S3
+            s3_key = body["Records"][0]["s3"]["object"]["key"]
+            filename = os.path.splitext(os.path.basename(s3_key))[0]  # Sin extensión
+
+            # Establece el nombre del archivo en el contexto
+            logger_service.set_context("filename", filename)
+
+            # Registra log con el contexto del archivo
+            logger_service.log_info("Procesando archivo")
             actions.start_process(record)
 
     except Exception as e:
-        # Registra el log del error no controlado
-        logger_service.log_error(f'Error no controlado {{1}}" "1={e}')
-        # Registra log informativo de fin de la ejecución
-        logger_service.log_info("Finaliza ejecucion con errores")
-        raise e
+        logger_service.log_error(f"Error inesperado: {str(e)}")
 
 
 if __name__ == "__main__":

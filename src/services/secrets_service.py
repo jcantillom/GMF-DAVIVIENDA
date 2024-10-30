@@ -26,37 +26,14 @@ class SecretsService(metaclass=Singleton):
     _initialized: bool = False
 
     def __init__(
-        self,
-        env: Environment,
-        logger_service: LoggerService,
-        secret_name: str,
-        keys_secrets: List[str],
+            self,
+            env: Environment,
+            logger_service: LoggerService,
+            secret_name: str,
+            keys_secrets: List[str],
     ) -> None:
         """
         Inicializa una instancia de la clase SecretsService.
-
-        Este método se ejecuta automáticamente después de que se crea una nueva instancia de la
-        clase. Se cargan y validan los secrets del AWS Secrets Manager.
-
-        Args:
-            env (Environment):
-                Instancia con los valores de las variables de entorno.
-            logger_service (LoggerService):
-                Servicio de logging para registrar errores y eventos.
-            secret_name (str):
-                Nombre del secret.
-            keys_secrets (List[str]):
-                Llaves con los nombres de los valores que se requieren obtener.
-
-        Raises:
-            ValueError:
-                Si no se puede obtener el valor del secret.
-            ClientError:
-                Si hay error con el cliente.
-            json.JSONDecodeError:
-                Si hay error al decodificar el secret.
-            Exception:
-                Si hay errores al cargar o validar el secret.
         """
         # Valida si ya existe una instancia
         if not self._initialized:
@@ -65,9 +42,6 @@ class SecretsService(metaclass=Singleton):
             # Atributo para registrar logs
             self.logger_service: LoggerService = logger_service
             # Registra log de información para indicar que se inicia obtención de los secrets
-            self.logger_service.log_info(
-                "Inicia proceso para obtener los secrets de AWS Secrets Manager"
-            )
 
             # Valida si la conexión al servicio de AWS Secrets Manager es de forma local
             if env.IS_LOCAL:
@@ -87,30 +61,9 @@ class SecretsService(metaclass=Singleton):
             # Obtiene los valores de los secrets
             self._get_secret_value(secret_name=secret_name, keys_secrets=keys_secrets)
 
-            # Registra log de información para indicar que se finaliza la obtención de los secrets
-            self.logger_service.log_info(
-                "Finaliza correctamente el proceso para obtener los secrets de AWS Secrets Manager"
-            )
-
     def _get_secret_value(self, secret_name: str, keys_secrets: List[str]) -> None:
         """
         Obtiene el valor de un secret específico y lo asigna como atributos de la instancia.
-
-        Args:
-            secret_name (str):
-                Nombre del secret.
-            keys_secrets (List[str]):
-                Llaves con los nombres de los valores que se requieren obtener.
-
-        Raises:
-            ValueError:
-                Si no se puede obtener el valor del secret.
-            json.JSONDecodeError:
-                Si hay error al decodificar el secret.
-            ClientError:
-                Si hay error con el cliente.
-            Exception:
-                Si hay errores al cargar o validar el secret.
         """
         try:
             # Obtiene el valor de un secret específico

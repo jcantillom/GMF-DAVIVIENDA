@@ -26,32 +26,14 @@ class ParameterStoreService(metaclass=Singleton):
     _initialized: bool = False
 
     def __init__(
-        self,
-        env: Environment,
-        logger_service: LoggerService,
-        parameter_names: List[str],
+            self,
+            env: Environment,
+            logger_service: LoggerService,
+            parameter_names: List[str],
     ) -> None:
         """
         Inicializa una instancia de la clase ParameterStoreService.
 
-        Este método se ejecuta automáticamente después de que se crea una nueva instancia de la
-        clase. Se cargan y validan los parámetros del AWS System Manager Parameter Store.
-
-        Args:
-            env (Environment):
-                Instancia con los valores de las variables de entorno.
-            logger_service (LoggerService):
-                Servicio de logging para registrar errores y eventos.
-            parameter_names (List[str]):
-                Nombres de los parámetros a obtener.
-
-        Raises:
-            json.JSONDecodeError:
-                Si hay error al decodificar el parámetro.
-            ClientError:
-                Si hay error con el cliente.
-            Exception:
-                Si hay errores al cargar o validar el parámetro.
         """
         # Valida si ya existe una instancia
         if not self._initialized:
@@ -60,11 +42,7 @@ class ParameterStoreService(metaclass=Singleton):
             # Atributo para registrar logs
             self.logger_service: LoggerService = logger_service
             # Registra log de información para indicar que se inicia obtención de los parámetro
-            self.logger_service.log_info(
-                "Inicia proceso para obtener los parámetros del AWS System Manager Parameter Store"
-            )
 
-            # Valida si la conexión al servicio de AWS System Manager Parameter Store es de forma
             # local
             if env.IS_LOCAL:
                 # Inicializa un cliente para interactuar con AWS System Manager Parameter Store
@@ -88,26 +66,10 @@ class ParameterStoreService(metaclass=Singleton):
 
             # Registra log de información para indicar que se finaliza la obtención de los
             # parámetros
-            self.logger_service.log_info(
-                "Finaliza correctamente el proceso para obtener los parámetros del AWS System"
-                "Manager Parameter Store"
-            )
 
     def get_parameters(self, parameter_names: List[str]) -> None:
         """
         Obtiene el valor de los parámetros y lo asigna como atributos de la instancia.
-
-        Args:
-            parameter_names (List[str]):
-                Nombres de los parámetros a obtener.
-
-        Raises:
-            json.JSONDecodeError:
-                Si hay error al decodificar el parámetro.
-            ClientError:
-                Si hay error con el cliente.
-            Exception:
-                Si hay errores al cargar o validar el parámetro.
         """
         # Recorre los nombres de los parámetros a obtener
         for parameter_name in parameter_names:
