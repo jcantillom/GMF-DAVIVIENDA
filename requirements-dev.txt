@@ -1,0 +1,5 @@
+black==24.4.2           # Herramienta de formateo de código
+isort==5.13.2           # Herramienta de ordenación de importaciones
+mypy==1.10.1            # Verificador estático de tipos opcional
+pylint==3.2.3           # Herramienta de análisis estático de código
+pytest==8.2.2           # Framework para la realización de pruebas
